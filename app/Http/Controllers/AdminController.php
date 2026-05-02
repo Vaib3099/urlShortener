@@ -64,10 +64,11 @@ class AdminController extends Controller
     {
         $clientId = Auth::user()->client_id;
 
-        $userCount   = User::where([
+        $userCount = User::where([
             ['client_id', $clientId],
             ['id', '!=', Auth::id()]
         ])->count();
+
         $members = User::where([
             ['client_id', $clientId],
             ['id', '!=', Auth::id()]
@@ -75,10 +76,12 @@ class AdminController extends Controller
         ->orderBy('created_at', 'desc')
         ->paginate(10);
 
-        // URL listing with filters
+        // Default filter = this_month
+        $filter = $request->filter ?? 'this_month';
+
         $urlsQuery = Url::where('client_id', $clientId);
 
-        switch ($request->filter) {
+        switch ($filter) {
             case 'today':
                 $urlsQuery->whereDate('created_at', Carbon::today());
                 break;
@@ -93,6 +96,7 @@ class AdminController extends Controller
                         ->whereYear('created_at', Carbon::now()->subMonth()->year);
                 break;
             case 'this_month':
+            default:
                 $urlsQuery->whereMonth('created_at', Carbon::now()->month)
                         ->whereYear('created_at', Carbon::now()->year);
                 break;
@@ -100,7 +104,7 @@ class AdminController extends Controller
 
         $urls = $urlsQuery->orderBy('created_at', 'desc')->paginate(10);
 
-        return view('admin.dashboard', compact('userCount', 'members', 'urls'));
+        return view('admin.dashboard', compact('userCount', 'members', 'urls', 'filter'));
     }
 
     // Admin creates users under them

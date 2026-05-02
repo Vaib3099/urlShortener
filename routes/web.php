@@ -26,32 +26,33 @@ Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-// Superadmin creates admins
+// Superadmin routes
 Route::middleware(['role:superadmin'])->group(function () {
     Route::get('/superadmin/create-admin', [AdminController::class, 'showCreateForm'])
         ->name('superadmin.create-admin');
 
     Route::post('/superadmin/create-admin', [AdminController::class, 'store'])
-        ->name('superadmin.store-admin');  // <-- this is the one your Blade form needs
+        ->name('superadmin.store-admin'); 
 });
 
-// Admin dashboard & user management
-Route::middleware(['role:admin'])->group(function () {
+// Admin routes
+Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])
-         ->name('admin.dashboard');   // ✅ add name here
+         ->name('admin.dashboard');
 
     Route::get('/admin/create-user', [AdminController::class, 'showCreateUserForm'])
          ->name('admin.create-user');
 
     Route::post('/admin/create-user', [AdminController::class, 'storeUser'])
          ->name('admin.store-user');
+
+    Route::get('/urls', [UrlController::class, 'index'])->name('urls.index');
 });
 
-
-Route::middleware('auth', 'role:admin,member')->group(function () {
-    Route::get('/urls', [UrlController::class, 'index'])->name('urls.index');
+// Admin & Member routes
+Route::middleware(['auth', 'role:admin,member'])->group(function () {
     Route::get('/urls/create', function () {
-        return view('urls.create');   // shows the form
+        return view('urls.create');
     })->name('urls.create');
     Route::post('/urls', [UrlController::class, 'store'])->name('urls.store');
 });
@@ -59,6 +60,7 @@ Route::middleware('auth', 'role:admin,member')->group(function () {
 // Public redirect route
 Route::get('/s/{shortCode}', [UrlController::class, 'redirect'])->name('urls.redirect');
 
+// Member routes
 Route::middleware(['auth', 'role:member'])->group(function () {
     Route::get('/dashboard', [UserController::class, 'dashboard'])
          ->name('member.dashboard');
