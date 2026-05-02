@@ -31,27 +31,48 @@ A lightweight URL shortener built with Laravel. Create short links, manage users
 
    composer install
 
-3. Install JS dependencies and build assets
-
-   npm install
-   npm run build
-
-4. Copy environment file and generate app key
+3. Copy environment file and generate app key
 
    cp .env.example .env
    php artisan key:generate
 
-5. Configure the .env database values (DB_CONNECTION, DB_HOST, DB_DATABASE, DB_USERNAME, DB_PASSWORD) and other settings like APP_URL.
+4. Configure the .env database values (DB_CONNECTION, DB_HOST, DB_DATABASE, DB_USERNAME, DB_PASSWORD) and other settings like APP_URL.
 
-6. Run migrations and seeders
+5. Run migrations and seeders
 
    php artisan migrate --seed
 
-7. Start the local server
+6. Start the local server
 
    php artisan serve
 
 Open http://127.0.0.1:8000 (or your APP_URL) to use the app.
+
+## Using Laravel Sail (Docker)
+
+- Requirements: Docker Desktop (or Docker Engine + Docker Compose).
+
+Clone the repository
+
+   git clone <repo-url>
+   cd urlShortner
+
+2. Install PHP dependencies
+
+   composer install
+
+3. Copy .env and generate app key (set DB host to mysql when using Sail):
+
+    cp .env.example .env
+    ./vendor/bin/sail artisan key:generate
+
+4. Start Sail
+
+    ./vendor/bin/sail up -d
+
+5. Run migrations and seeders:
+
+    ./vendor/bin/sail artisan migrate --seed
 
 ## Development
 - Create a feature branch for changes
@@ -76,3 +97,7 @@ Contributions and issues are welcome. Please open a PR with a clear description 
 ## License
 This project is licensed under the MIT License.
 
+## AI Assistance
+
+- This README and a few inline code suggestions were created with the help of an AI assistant.
+- Review all generated content and code before running in production.
