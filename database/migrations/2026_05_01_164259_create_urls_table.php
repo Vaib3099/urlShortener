@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('client_id')->constrained()->onDelete('cascade');
             $table->string('original_url');
             $table->string('short_code')->unique();
+            $table->unsignedBigInteger('hits')->default(0);
             $table->timestamps();
         });
     }

@@ -3,53 +3,51 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Auth;
-use App\Models\User;
-use App\Models\Url;
 use Illuminate\Http\Request;
-use Carbon\Carbon;
+use App\Services\UserService;
 
 class UserController extends Controller
 {
+    protected $userService;
+
+    public function __construct(
+        UserService $userService
+    ) {
+        $this->userService = $userService;
+    }
+
     public function index()
     {
-        // Only fetch users tied to the same client as the logged-in admin
-        $users = User::where('client_id', Auth::user()->client_id)->get();
+        $members = $this->userService->getClientUsers(10);
+        return view('admin.users.index', compact('members'));
+    }
 
-        return view('admin.users.index', compact('users'));
+    public function storeUser(Request $request)
+    {
+        $request->validate([
+            'name'  => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'role'  => 'required|in:user,admin',
+        ]);
+
+        $this->userService->inviteUser($request->only('name','email','role'));
+
+        return redirect()->back()->with('success', 'User invited successfully!');
     }
 
     public function dashboard(Request $request)
     {
         $user = Auth::user();
-
         $filter = $request->filter ?? 'this_month';
 
-        $urlsQuery = Url::where('user_id', $user->id);
-
-        switch ($filter) {
-            case 'today':
-                $urlsQuery->whereDate('created_at', Carbon::today());
-                break;
-            case 'last_week':
-                $urlsQuery->whereBetween('created_at', [
-                    Carbon::now()->subWeek()->startOfWeek(),
-                    Carbon::now()->subWeek()->endOfWeek()
-                ]);
-                break;
-            case 'last_month':
-                $urlsQuery->whereMonth('created_at', Carbon::now()->subMonth()->month)
-                        ->whereYear('created_at', Carbon::now()->subMonth()->year);
-                break;
-            case 'this_month':
+        switch ($user->role->name) {
+            case 'superadmin':
+                return view('superadmin.dashboard', $this->userService->getData($user, $filter));
+            case 'admin':
+                return view('admin.dashboard', $this->userService->getData($user, $filter));
             default:
-                $urlsQuery->whereMonth('created_at', Carbon::now()->month)
-                        ->whereYear('created_at', Carbon::now()->year);
-                break;
+                return view('member.dashboard', $this->userService->getData($user, $filter));
         }
-
-        $urls = $urlsQuery->orderBy('created_at', 'desc')->paginate(10);
-
-        return view('member.dashboard', compact('user', 'urls', 'filter'));
     }
 
 }

@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\AdminController;
+use App\Http\Controllers\ClientController;
 use App\Http\Controllers\UrlController;
 use App\Http\Controllers\UserController;
 
@@ -18,50 +18,62 @@ use App\Http\Controllers\UserController;
 */
 
 Route::get('/', function () {
-    return view('home');
+    return redirect('/dashboard');
 });
 
 // Login & Logout
-Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
+Route::get('/login', function () {
+            return view('auth.login');
+        })->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Superadmin routes
-Route::middleware(['role:superadmin'])->group(function () {
-    Route::get('/superadmin/create-admin', [AdminController::class, 'showCreateForm'])
-        ->name('superadmin.create-admin');
+Route::middleware(['auth', 'role:superadmin'])->group(function () {
+    Route::get('/create-admin', function () {
+            return view('superadmin.create-admin');
+        })->name('superadmin.create-admin');
 
-    Route::post('/superadmin/create-admin', [AdminController::class, 'store'])
-        ->name('superadmin.store-admin'); 
+    Route::post('/create-admin', [ClientController::class, 'store'])
+        ->name('superadmin.store-admin');
+
+    Route::get('/clients', [ClientController::class, 'clients'])
+        ->name('superadmin.clients'); 
 });
 
 // Admin routes
 Route::middleware(['auth', 'role:admin'])->group(function () {
-    Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])
-         ->name('admin.dashboard');
+    Route::get('/create-user', function () {
+            return view('admin.create-user');
+        })->name('admin.create-user');
 
-    Route::get('/admin/create-user', [AdminController::class, 'showCreateUserForm'])
-         ->name('admin.create-user');
-
-    Route::post('/admin/create-user', [AdminController::class, 'storeUser'])
+    Route::post('/create-user', [UserController::class, 'storeUser'])
          ->name('admin.store-user');
+         
+    Route::get('/members', [UserController::class, 'index'])
+         ->name('admin.members');
+});
 
+Route::middleware(['auth', 'role:admin,superadmin'])->group(function () {
     Route::get('/urls', [UrlController::class, 'index'])->name('urls.index');
 });
 
 // Admin & Member routes
-Route::middleware(['auth', 'role:admin,member'])->group(function () {
-    Route::get('/urls/create', function () {
-        return view('urls.create');
-    })->name('urls.create');
-    Route::post('/urls', [UrlController::class, 'store'])->name('urls.store');
+Route::middleware(['auth', 'role:admin,member,superadmin'])->group(function () {
+    Route::get('/dashboard', [UserController::class, 'dashboard'])
+         ->name('user.dashboard');
+
+    Route::prefix('urls')->group(function () {
+        Route::get('/create', function () {
+            return view('urls.create');
+        })->name('urls.create');
+
+        Route::post('/', [UrlController::class, 'store'])->name('urls.store');
+
+        Route::get('/download', [UrlController::class, 'download'])->name('urls.download');
+    });
 });
 
 // Public redirect route
 Route::get('/s/{shortCode}', [UrlController::class, 'redirect'])->name('urls.redirect');
 
-// Member routes
-Route::middleware(['auth', 'role:member'])->group(function () {
-    Route::get('/dashboard', [UserController::class, 'dashboard'])
-         ->name('member.dashboard');
-});

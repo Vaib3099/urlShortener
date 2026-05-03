@@ -5,18 +5,16 @@
     <h1>Admin Dashboard</h1>
     <p>Welcome, {{ Auth::user()->name }} (Client: {{ Auth::user()->client->name }})</p>
 
-    <div class="row mt-4">
-        <div class="col-md-4">
-            <div class="card text-center">
-                <div class="card-body">
-                    <h5 class="card-title">Total Members</h5>
-                    <p class="display-6">{{ $userCount }}</p>
-                </div>
-            </div>
-        </div>
+    @include('partials.url-table', ['urls' => $urls, 'isAdmin' => true, 'isSuperAdmin' => false, 'viewMore' => true, 'route' => route('admin.dashboard')])
+    <div class="d-flex">
+        @if($viewMore ?? true)
+            <h3 class="ms-3">
+                <a href="{{ url('/urls') }}" class="btn btn-sm btn-primary">
+                    View More
+                </a>
+            </h3>
+        @endif
     </div>
-
-    @include('partials.url-table', ['urls' => $urls, 'isAdmin' => true, 'viewMore' => true])
 
     <h3 class="mt-5 d-flex justify-content-between align-items-center">
         <span>Team Members & Admins</span>
@@ -59,7 +57,7 @@
     <div class="d-flex">
         {{ $members->links() }}
         <h3 class="ms-3">
-            <a href="{{ url('/members') }}" class="btn btn-sm btn-primary">
+            <a href="{{ url('/admin/members') }}" class="btn btn-sm btn-primary">
                 View More
             </a>
         </h3>

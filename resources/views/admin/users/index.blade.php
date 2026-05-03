@@ -2,29 +2,48 @@
 
 @section('content')
 <div class="container">
-    <h2 class="mb-4">Users for {{ Auth::user()->client->name }}</h2>
+    <h1>Team Members</h1>
+    <p>Client: {{ Auth::user()->client->name }}</p>
 
-    <table class="table table-bordered">
+    <div class="mb-3">
+        <a href="{{ route('admin.create-user') }}" class="btn btn-sm btn-primary">
+            Invite New Member
+        </a>
+    </div>
+
+    <table class="table table-striped">
         <thead>
             <tr>
                 <th>Name</th>
                 <th>Email</th>
                 <th>Role</th>
+                <th>Total URLs</th>
+                <th>Total Hits</th>
             </tr>
         </thead>
         <tbody>
-            @forelse($users as $user)
+            @forelse($members as $member)
                 <tr>
-                    <td>{{ $user->name }}</td>
-                    <td>{{ $user->email }}</td>
-                    <td>{{ $user->role->name }}</td>
+                    <td>{{ $member->name }}</td>
+                    <td>{{ $member->email }}</td>
+                    <td>
+                        <span class="badge bg-{{ $member->role->name === 'admin' ? 'danger' : 'secondary' }}">
+                            {{ ucfirst($member->role->name) }}
+                        </span>
+                    </td>
+                    <td>{{ $member->urls_count }}</td>
+                    <td>{{ $member->urls_sum_hits ?? 0 }}</td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="3">No users found for this client.</td>
+                    <td colspan="6">No members found for this client.</td>
                 </tr>
             @endforelse
         </tbody>
     </table>
+
+    <div class="d-flex justify-content-center">
+        {{ $members->links() }}
+    </div>
 </div>
 @endsection

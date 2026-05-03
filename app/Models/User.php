@@ -54,4 +54,9 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Client::class);
     }
+
+    public function urls()
+    {
+        return $this->hasMany(Url::class);
+    }
 }

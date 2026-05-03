@@ -24,4 +24,9 @@ class Client extends Model
             $query->where('name', 'admin');
         });
     }
+
+    public function urls()
+    {
+        return $this->hasMany(Url::class);
+    }
 }

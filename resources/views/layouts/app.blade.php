@@ -7,7 +7,9 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
         <div class="container">
-            <a class="navbar-brand" href="{{ url('/') }}">MyApp</a>
+            <a class="navbar-brand" href="{{ Auth::check() 
+            ? route('user.dashboard')
+            : url('/') }}">MyApp</a>
 
             <!-- Logout link -->
             <a href="#" 
