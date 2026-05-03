@@ -1,14 +1,16 @@
 <h3 class="mt-4 d-flex justify-content-between align-items-center">
     <span>{{ $isAdmin ? 'Shortened URLs' : 'Your Shortened URLs' }}</span>
-    @if(!$isSuperAdmin)
-        <a href="{{ route('urls.create') }}" class="btn btn-sm btn-success">
-            Shorten New URL
+    <div>
+        @if(!$isSuperAdmin)
+            <a href="{{ route('urls.create') }}" class="btn btn-sm btn-success">
+                Shorten New URL
+            </a>
+        @endif
+        <a href="{{ route('urls.download', ['filter' => request('filter') ?? 'this_month']) }}"
+        class="btn btn-sm btn-outline-success">
+            Download URLs
         </a>
-    @endif
-    <a href="{{ route('urls.download', ['filter' => request('filter') ?? 'this_month']) }}"
-       class="btn btn-sm btn-outline-success">
-        Download URLs
-    </a>
+    </div>
 </h3>
 
 <form method="GET" action="{{ $route }}" class="mb-3">

@@ -43,12 +43,12 @@ Route::middleware(['auth', 'role:superadmin'])->group(function () {
 
 // Admin routes
 Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::post('/create-user', [UserController::class, 'storeUser'])
+         ->name('admin.store-user');
+    
     Route::get('/create-user', function () {
             return view('admin.create-user');
         })->name('admin.create-user');
-
-    Route::post('/create-user', [UserController::class, 'storeUser'])
-         ->name('admin.store-user');
          
     Route::get('/members', [UserController::class, 'index'])
          ->name('admin.members');

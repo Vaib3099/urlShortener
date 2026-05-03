@@ -27,7 +27,7 @@ class UserController extends Controller
         $request->validate([
             'name'  => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
-            'role'  => 'required|in:user,admin',
+            'role'  => 'required|in:member,admin',
         ]);
 
         $this->userService->inviteUser($request->only('name','email','role'));

@@ -5,11 +5,11 @@
     <h1>Admin Dashboard</h1>
     <p>Welcome, {{ Auth::user()->name }} (Client: {{ Auth::user()->client->name }})</p>
 
-    @include('partials.url-table', ['urls' => $urls, 'isAdmin' => true, 'isSuperAdmin' => false, 'viewMore' => true, 'route' => route('admin.dashboard')])
+    @include('partials.url-table', ['urls' => $urls, 'isAdmin' => true, 'isSuperAdmin' => false, 'viewMore' => true, 'route' => route('user.dashboard')])
     <div class="d-flex">
         @if($viewMore ?? true)
             <h3 class="ms-3">
-                <a href="{{ url('/urls') }}" class="btn btn-sm btn-primary">
+                <a href="{{ route('urls.index') }}" class="btn btn-sm btn-primary">
                     View More
                 </a>
             </h3>
@@ -19,7 +19,7 @@
     <h3 class="mt-5 d-flex justify-content-between align-items-center">
         <span>Team Members & Admins</span>
         <!-- Invite Team Member link -->
-        <a href="{{ url('/admin/create-user') }}" class="btn btn-sm btn-primary">
+        <a href="{{ route('admin.create-user') }}" class="btn btn-sm btn-primary">
             Invite Team Member
         </a>
     </h3>
@@ -57,7 +57,7 @@
     <div class="d-flex">
         {{ $members->links() }}
         <h3 class="ms-3">
-            <a href="{{ url('/admin/members') }}" class="btn btn-sm btn-primary">
+            <a href="{{ route('admin.members') }}" class="btn btn-sm btn-primary">
                 View More
             </a>
         </h3>

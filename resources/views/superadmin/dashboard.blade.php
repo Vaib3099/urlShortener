@@ -20,7 +20,7 @@
     <div class="d-flex">
         @if($viewMore ?? true)
             <h3 class="ms-3">
-                <a href="{{ url('/urls') }}" class="btn btn-sm btn-primary">
+                <a href="{{ route('urls.index') }}" class="btn btn-sm btn-primary">
                     View More
                 </a>
             </h3>

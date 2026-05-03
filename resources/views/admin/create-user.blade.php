@@ -17,7 +17,7 @@
         </div>
     @endif
 
-    <form method="POST" action="{{ url('/admin/create-user') }}">
+    <form method="POST" action="{{ route('admin.store-user') }}">
         @csrf
 
         <div class="mb-3">
@@ -33,7 +33,7 @@
         <div class="mb-3">
             <label for="role" class="form-label">Role</label>
             <select name="role" id="role" class="form-select" required>
-                <option value="user">Member</option>
+                <option value="member">Member</option>
                 <option value="admin">Admin</option>
             </select>
         </div>
