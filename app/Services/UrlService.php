@@ -31,7 +31,7 @@ class UrlService
 
     public function shortenUrl(string $originalUrl)
     {
-        $shortCode = str()->random(6);
+        $shortCode = str()->random(20);
 
         return $this->urls->create([
             'user_id'      => Auth::id(),
