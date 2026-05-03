@@ -8,10 +8,12 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\AdminInvitation;
+use App\Mail\MemberInvitation;
 use App\Models\User;
 use App\Repositories\ClientRepository;
 use App\Repositories\UrlRepository;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class UserService
 {
@@ -113,7 +115,18 @@ class UserService
             'client_id' => Auth::user()->client_id,
         ]);
 
-        Mail::to($user->email)->send(new AdminInvitation($user, $tempPassword));
+        $template = new AdminInvitation($user, $tempPassword);
+        if($role->name == 'member') {
+            $template = new MemberInvitation($user, $tempPassword);
+        }
+        try {
+            Mail::to($user->email)->send($template);
+        } catch (\Exception $e) {
+            Log::error("Failed to send invitation", [
+                'user' => $user->id,
+                'error' => $e->getMessage(),
+            ]);
+        }
 
         return $user;
     }

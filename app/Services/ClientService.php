@@ -8,6 +8,7 @@ use App\Models\Role;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\AdminInvitation;
+use Illuminate\Support\Facades\Log;
 
 class ClientService
 {
@@ -39,7 +40,14 @@ class ClientService
             'client_id' => $client->id,
         ]);
 
-        Mail::to($admin->email)->send(new AdminInvitation($admin, $tempPassword));
+        try {
+            Mail::to($admin->email)->send(new AdminInvitation($admin, $tempPassword));
+        } catch (\Exception $e) {
+            Log::error("Failed to send invitation", [
+                'user' => $admin->id,
+                'error' => $e->getMessage(),
+            ]);
+        }
 
         return $admin;
     }
